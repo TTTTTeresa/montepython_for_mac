@@ -15,6 +15,10 @@ for the bibtex entries).
 
 Recent changelog
 ----------------
+v3.6.1, June 20, 2024
+
+* Added euclid_spectroscopic and euclid_photometric_alm likelihoods from 2303.09451, 2405.06047 (S. Casas, M. Doerenkamp, J. Lesgourgues, S. Pamuk, L. Rathmann, Sabarish V., N. Schoeneberg)
+
 v3.6.0, June 1, 2023
 
 * Added Lyman-alpha alpha-beta-gamma-delta likelihood from 2206.08188 (D. C. Hooper, N. Schoeneberg, R. Murgia)
@@ -277,6 +281,108 @@ In your *Monte Python* configuration file, you will need to add
 There are nine Planck 2018 likelihoods defined in *Monte Python*: `Planck_highl_TT`, `Planck_highl_TT_lite`,
 `Planck_highl_TTTEEE`, `Planck_highl_TTTEEE_lite`, `Planck_lensing`, `Planck_lowl_TT`, `Planck_lowl_EE`,
 `Planck_lowl_EEBB`, `Planck_lowl_BB`, as well as five sets of parameter files, bestfit files, and covmats.
+
+
+Installation on macOS with M-series chips
+-----------------------------------------
+
+
+*Written by Teresa*
+
+The MontePython part
+--------------------
+
+The process is similar to the one described above for The MontePython part. The only difference is that you need to modify the path in the .zshrc file instead of the .bashrc file as in the Ubuntu system.
+
+The Class part
+--------------
+
+Use anaconda to create an environment with arm64 (or x86_64) architecture. If you have not changed CONDA_SUBDIR before, the default architecture for macOS with M-series chips is arm64. If you want to use the x86_64 architecture, add the following to your `.zshrc`:
+
+.. code-block:: shell
+
+    export CONDA_SUBDIR=osx-64  # x86
+
+And enter
+
+.. code-block:: shell
+
+    source ~/.zshrc
+
+Then, create a new environment.
+
+In the new environment, enter:
+
+.. code-block:: shell
+
+    pip install classy
+
+to install class. When looking for the path, if you use anaconda, it is likely to be installed in:
+
+.. code-block:: text
+
+    /path/to/your/anaconda3/envs/env_name/lib/python3.10/site-packages/class_public
+
+
+The Planck likelihood part
+---------------------------
+
+Enter the planck folder assuming you are already in the montepython directory
+
+.. code-block:: shell
+
+    cd planck
+    cd code/plc_3.0/plc-3.01
+
+Use homebrew to install dependencies
+
+.. code-block:: shell
+
+    brew install llvm
+    brew install cfitsio
+
+Add the path (arm64 architecture)
+
+.. code-block:: shell
+
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+    
+or
+
+.. code-block:: shell
+
+    export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+    export PATH="/opt/homebrew/bin/gfortran:$PATH"
+
+Add the path (x86_64 architecture)
+
+.. code-block:: shell
+
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+    
+or
+
+.. code-block:: shell
+
+    export PATH="/usr/local/bin/llvm/bin:$PATH"
+    export PATH="/usr/local/bin/gfortran:$PATH"
+
+After adding the path correctly (arm64), enter
+
+.. code-block:: shell
+
+    arch -arm64 /path/to/arm64/python waf configure --install_all_deps 
+    arch -arm64 /path/to/arm64/python waf install
+
+For x86_64 architecture, first change all instances of “arm64” to “x86_64” in the Makefile located at /planck/code/plc_3.0/plc-3.01/Makefile, then enter
+
+.. code-block:: shell
+
+    ./waf configure --install_all_deps
+    ./waf install
+
+to configure and install Planck.
+
 
 
 Enjoying the difference
